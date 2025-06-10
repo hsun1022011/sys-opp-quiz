@@ -42,6 +42,7 @@
     <option value="Unit5_full_vocab_synonym_antonym_quiz.csv">Unit 5</option>
     <option value="Unit6_full_vocab_synonym_antonym_quiz.csv">Unit 6</option>
   </select>
+  <button id="startBtn" onclick="loadQuiz()">게임시작 / Start</button>
   <div id="quiz"></div>
   <button id="submitBtn" onclick="submitQuiz()">Submit Answers</button>
   <div id="results"></div>
@@ -52,8 +53,8 @@
     const QUESTIONS_PER_PAGE = 5;
     let currentPage = 0;
 
-    document.getElementById('levelSelect').addEventListener('change', function(e) {
-      const fileName = e.target.value;
+    function loadQuiz() {
+      const fileName = document.getElementById('levelSelect').value;
       if (!fileName) return;
 
       fetch(fileName)
