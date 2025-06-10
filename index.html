@@ -11,6 +11,12 @@
       margin: auto;
       padding: 20px;
     }
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 20px;
+    }
     .question {
       margin-bottom: 20px;
     }
@@ -28,22 +34,30 @@
       display: none;
       margin-top: 20px;
     }
+    @media (max-width: 600px) {
+      .top-controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 <body>
   <h1>Vocabulary Synonym/Antonym Quiz by Unit</h1>
-  <label for="levelSelect">Select Unit:</label>
-  <select id="levelSelect">
-    <option value="">-- Select Unit --</option>
-    <option value="Unit1_full_vocab_synonym_antonym_quiz.csv">Unit 1</option>
-    <option value="Unit2_full_vocab_synonym_antonym_quiz.csv">Unit 2</option>
-    <option value="Unit3_full_vocab_synonym_antonym_quiz.csv">Unit 3</option>
-    <option value="Unit4_full_vocab_synonym_antonym_quiz.csv">Unit 4</option>
-    <option value="Unit5_full_vocab_synonym_antonym_quiz.csv">Unit 5</option>
-    <option value="Unit6_full_vocab_synonym_antonym_quiz.csv">Unit 6</option>
-  </select>
-  <button id="startBtn" onclick="loadQuiz()">게임시작 / Start</button>
-  <div id="quiz"></div>
+  <div class="top-controls">
+    <label for="levelSelect">Select Unit:</label>
+    <select id="levelSelect">
+      <option value="">-- Select Unit --</option>
+      <option value="Unit1_full_vocab_synonym_antonym_quiz.csv">Unit 1</option>
+      <option value="Unit2_full_vocab_synonym_antonym_quiz.csv">Unit 2</option>
+      <option value="Unit3_full_vocab_synonym_antonym_quiz.csv">Unit 3</option>
+      <option value="Unit4_full_vocab_synonym_antonym_quiz.csv">Unit 4</option>
+      <option value="Unit5_full_vocab_synonym_antonym_quiz.csv">Unit 5</option>
+      <option value="Unit6_full_vocab_synonym_antonym_quiz.csv">Unit 6</option>
+    </select>
+    <button id="startBtn" onclick="loadQuiz()">게임시작 / Start</button>
+  </div>
+  <div id="quiz" style="margin-top: 20px;"></div>
   <button id="submitBtn" onclick="submitQuiz()">Submit Answers</button>
   <div id="results"></div>
 
