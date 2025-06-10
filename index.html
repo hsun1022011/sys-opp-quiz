@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vocabulary Quiz</title>
+  <title>Vocabulary Quiz from CSV</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 700px;
+      max-width: 800px;
       margin: auto;
       padding: 20px;
     }
@@ -27,46 +27,63 @@
   </style>
 </head>
 <body>
-  <h1>Vocabulary Synonym/Antonym Quiz</h1>
+  <h1>Vocabulary Synonym/Antonym Quiz (CSV Upload)</h1>
+  <input type="file" id="fileInput" accept=".csv" />
   <div id="quiz"></div>
   <button onclick="submitQuiz()">Submit Answers</button>
   <div id="results"></div>
 
   <script>
-    const quizData = [
-      {
-        question: "Which of the following is a synonym of 'shudder'?",
-        options: ["tremble", "calm", "relax", "steady"],
-        answer: "tremble"
-      },
-      {
-        question: "Which of the following is an antonym of 'squirm'?",
-        options: ["stay calm", "writhe", "twist", "squiggle"],
-        answer: "stay calm"
-      },
-      // 추가 문제는 이곳에 계속 이어서 삽입할 수 있습니다.
-    ];
+    let quizData = [];
 
-    const quizContainer = document.getElementById("quiz");
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
 
-    quizData.forEach((q, index) => {
-      const div = document.createElement("div");
-      div.className = "question";
-      div.innerHTML = `<strong>Q${index + 1}. ${q.question}</strong>`;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const text = event.target.result;
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split(',');
 
-      const opts = document.createElement("div");
-      opts.className = "options";
+        quizData = lines.slice(1).map(line => {
+          const [question, a, b, c, d, answer] = line.split(',');
+          return {
+            question: question.trim(),
+            options: [a.trim(), b.trim(), c.trim(), d.trim()],
+            answer: answer.trim()
+          };
+        });
 
-      q.options.forEach((opt, i) => {
-        const id = `q${index}_opt${i}`;
-        opts.innerHTML += `
-          <label><input type="radio" name="q${index}" value="${opt}" id="${id}" /> ${opt}</label>
-        `;
-      });
+        renderQuiz();
+      };
 
-      div.appendChild(opts);
-      quizContainer.appendChild(div);
+      reader.readAsText(file);
     });
+
+    function renderQuiz() {
+      const quizContainer = document.getElementById("quiz");
+      quizContainer.innerHTML = '';
+
+      quizData.forEach((q, index) => {
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML = `<strong>Q${index + 1}. ${q.question}</strong>`;
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        q.options.forEach((opt, i) => {
+          const id = `q${index}_opt${i}`;
+          opts.innerHTML += `
+            <label><input type="radio" name="q${index}" value="${opt}" id="${id}" /> ${opt}</label>
+          `;
+        });
+
+        div.appendChild(opts);
+        quizContainer.appendChild(div);
+      });
+    }
 
     function submitQuiz() {
       let score = 0;
