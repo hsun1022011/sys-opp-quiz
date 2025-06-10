@@ -60,7 +60,8 @@
       fetch(fileName)
         .then(response => response.text())
         .then(text => {
-          const lines = text.trim().split('\n');
+          const lines = text.trim().split('
+');
           quizData = lines.slice(1).map(line => {
             const [question, a, b, c, d, answer] = line.split(',');
             return {
@@ -77,6 +78,7 @@
           document.getElementById("submitBtn").style.display = 'none';
           renderQuizPage();
         });
+    }
     });
 
     function shuffleArray(array) {
