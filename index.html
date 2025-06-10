@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vocabulary Quiz from CSV</title>
+  <title>Vocabulary Quiz by Unit</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -31,8 +31,14 @@
   </style>
 </head>
 <body>
-  <h1>Vocabulary Synonym/Antonym Quiz (CSV Upload)</h1>
-  <input type="file" id="fileInput" accept=".csv" />
+  <h1>Vocabulary Synonym/Antonym Quiz by Unit</h1>
+  <label for="levelSelect">Select Unit:</label>
+  <select id="levelSelect">
+    <option value="">-- Select Unit --</option>
+    <option value="Unit1_full_vocab_synonym_antonym_quiz.csv">Unit 1</option>
+    <option value="Unit2_full_vocab_synonym_antonym_quiz.csv">Unit 2</option>
+    <option value="Unit3_full_vocab_synonym_antonym_quiz.csv">Unit 3</option>
+  </select>
   <div id="quiz"></div>
   <button id="submitBtn" onclick="submitQuiz()">Submit Answers</button>
   <div id="results"></div>
@@ -43,31 +49,30 @@
     const QUESTIONS_PER_PAGE = 5;
     let currentPage = 0;
 
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    document.getElementById('levelSelect').addEventListener('change', function(e) {
+      const fileName = e.target.value;
+      if (!fileName) return;
 
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const text = event.target.result;
-        const lines = text.trim().split('\n');
-        const headers = lines[0].split(',');
+      fetch(fileName)
+        .then(response => response.text())
+        .then(text => {
+          const lines = text.trim().split('\n');
+          quizData = lines.slice(1).map(line => {
+            const [question, a, b, c, d, answer] = line.split(',');
+            return {
+              question: question.trim(),
+              options: [a.trim(), b.trim(), c.trim(), d.trim()],
+              answer: answer.trim()
+            };
+          }).slice(0, 10);
 
-        quizData = lines.slice(1).map(line => {
-          const [question, a, b, c, d, answer] = line.split(',');
-          return {
-            question: question.trim(),
-            options: [a.trim(), b.trim(), c.trim(), d.trim()],
-            answer: answer.trim()
-          };
-        }).slice(0, 10); // Limit to 10 questions
-
-        quizData = shuffleArray(quizData);
-        currentPage = 0;
-        renderQuizPage();
-      };
-
-      reader.readAsText(file);
+          quizData = shuffleArray(quizData);
+          userAnswers = {};
+          currentPage = 0;
+          document.getElementById("results").innerHTML = '';
+          document.getElementById("submitBtn").style.display = 'none';
+          renderQuizPage();
+        });
     });
 
     function shuffleArray(array) {
