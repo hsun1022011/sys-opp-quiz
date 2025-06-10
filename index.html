@@ -35,6 +35,9 @@
 
   <script>
     let quizData = [];
+    let displayedQuestions = [];
+    const QUESTIONS_PER_PAGE = 5;
+    let currentPage = 0;
 
     document.getElementById('fileInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
@@ -55,34 +58,66 @@
           };
         });
 
-        renderQuiz();
+        quizData = shuffleArray(quizData);
+        currentPage = 0;
+        renderQuizPage();
       };
 
       reader.readAsText(file);
     });
 
-    function renderQuiz() {
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function renderQuizPage() {
       const quizContainer = document.getElementById("quiz");
       quizContainer.innerHTML = '';
+      const start = currentPage * QUESTIONS_PER_PAGE;
+      const end = start + QUESTIONS_PER_PAGE;
+      displayedQuestions = quizData.slice(start, end);
 
-      quizData.forEach((q, index) => {
+      displayedQuestions.forEach((q, index) => {
+        const realIndex = start + index;
         const div = document.createElement("div");
         div.className = "question";
-        div.innerHTML = `<strong>Q${index + 1}. ${q.question}</strong>`;
+        div.innerHTML = `<strong>Q${realIndex + 1}. ${q.question}</strong>`;
 
         const opts = document.createElement("div");
         opts.className = "options";
 
         q.options.forEach((opt, i) => {
-          const id = `q${index}_opt${i}`;
+          const id = `q${realIndex}_opt${i}`;
           opts.innerHTML += `
-            <label><input type="radio" name="q${index}" value="${opt}" id="${id}" /> ${opt}</label>
+            <label><input type="radio" name="q${realIndex}" value="${opt}" id="${id}" /> ${opt}</label>
           `;
         });
 
         div.appendChild(opts);
         quizContainer.appendChild(div);
       });
+
+      const nav = document.createElement("div");
+      nav.innerHTML = `<button onclick="prevPage()">Previous</button> <button onclick="nextPage()">Next</button>`;
+      quizContainer.appendChild(nav);
+    }
+
+    function prevPage() {
+      if (currentPage > 0) {
+        currentPage--;
+        renderQuizPage();
+      }
+    }
+
+    function nextPage() {
+      if ((currentPage + 1) * QUESTIONS_PER_PAGE < quizData.length) {
+        currentPage++;
+        renderQuizPage();
+      }
     }
 
     function submitQuiz() {
